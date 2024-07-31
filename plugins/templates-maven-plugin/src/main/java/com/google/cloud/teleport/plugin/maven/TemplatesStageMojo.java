@@ -440,11 +440,27 @@ public class TemplatesStageMojo extends TemplatesBaseMojo {
             // Keep the original entrypoint
             element("entrypoint", "INHERIT"),
             // Point to the command spec
-            element("environment", element("DATAFLOW_JAVA_COMMAND_SPEC", commandSpec))));
-
+            element(
+                "environment",
+                element("DATAFLOW_JAVA_COMMAND_SPEC", commandSpec),
+                element("LANG", "en_US.UTF-8"),
+                element("LC_ALL", "en_US.UTF-8"),
+                element("LANGUAGE", "en_US:en"))));
+    elements.add(
+        element(
+            "extraDirectories",
+            element(
+                "paths",
+                element(
+                    "path", element("from", "/usr/share/i18n"), element("into", "/usr/share/i18n")),
+                element(
+                    "path",
+                    element("from", "/usr/share/i18n"),
+                    element("into", "/usr/share/i18n")))));
     // Only use shaded JAR and exclude libraries if shade was not disabled
     if (System.getProperty("skipShade") == null
         || System.getProperty("skipShade").equalsIgnoreCase("false")) {
+      elements.remove(elements.indexOf("extraDirectories"));
       elements.add(
           element(
               "extraDirectories",
@@ -454,7 +470,15 @@ public class TemplatesStageMojo extends TemplatesBaseMojo {
                       "path",
                       element("from", targetDirectory + "/classes"),
                       element("includes", commandSpecFileName),
-                      element("into", "/template/" + containerName + "/resources")))));
+                      element("into", "/template/" + containerName + "/resources")),
+                  element(
+                      "path",
+                      element("from", "/usr/share/i18n"),
+                      element("into", "/usr/share/i18n")),
+                  element(
+                      "path",
+                      element("from", "/usr/share/i18n"),
+                      element("into", "/usr/share/i18n")))));
 
       elements.add(element("containerizingMode", "packaged"));
       elements.add(

@@ -131,6 +131,35 @@ public class JdbcToBigQueryIT extends JDBCBaseIT {
   }
 
   @Test
+  public void testMySqlToBigQueryFlexUTF8() throws IOException {
+    // Create MySQL Resource manager
+    mySQLResourceManager = MySQLResourceManager.builder(testName).build();
+
+    // Arrange MySQL-compatible schema
+    HashMap<String, String> columns = new HashMap<>();
+    columns.put(ROW_ID, "NUMERIC NOT NULL");
+    columns.put(NAME, "VARCHAR(200)");
+    columns.put(AGE, "NUMERIC");
+    columns.put(MEMBER, "VARCHAR(200)");
+    columns.put(ENTRY_ADDED, "VARCHAR(200)");
+    JDBCResourceManager.JDBCSchema schema = new JDBCResourceManager.JDBCSchema(columns, ROW_ID);
+
+    // Run a simple IT
+    simpleJdbcToBigQueryTest(
+        testName,
+        schema,
+        MYSQL_DRIVER,
+        mySqlDriverGCSPath(),
+        mySQLResourceManager,
+        true,
+        config ->
+            config.addParameter(
+                "query",
+                "SELECT ROW_ID, códe AS CODE, AGE, MEMBER AS IS_MEMBER, ENTRY_ADDED FROM "
+                    + testName));
+  }
+
+  @Test
   public void testMySqlToBigQueryWithStorageWriteApi() throws IOException {
     // Create MySQL Resource manager
     mySQLResourceManager = MySQLResourceManager.builder(testName).build();
